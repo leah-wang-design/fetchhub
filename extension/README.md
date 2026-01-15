@@ -14,6 +14,10 @@ Visual feedback tool for any webpage. Capture screenshots, annotate with area se
 - 🤝 **Team Collaboration** - View all feedback via web gallery
 
 ## Installation
+Download updated extension:
+Go to: https://github.com/leah-wang-design/fetchhub
+Click "Code" → "Download ZIP"
+Unzip to your file.
 
 ### Load Unpacked (Development)
 
@@ -22,6 +26,12 @@ Visual feedback tool for any webpage. Capture screenshots, annotate with area se
 3. Click **"Load unpacked"**
 4. Select the `extension` directory: `/Users/leahwang/design-feedback/extension/`
 5. Extension installed! Look for the 📸 icon in your toolbar
+6. Authenticate FIRST:
+Visit: https://fetchhub.px-tester.workers.dev
+Login with your @cloudflare.com email via Cloudflare Access
+7. Then use extension:
+Extension will now work on any webpage
+Your name will show correctly.
 
 ### Production (Coming Soon)
 Will be available on Chrome Web Store
