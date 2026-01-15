@@ -83,7 +83,7 @@ async function loadRecentReview() {
     
     // Make card clickable to open in web app
     document.querySelector('.review-card').addEventListener('click', () => {
-      const url = `https://design-feedback.px-tester.workers.dev/gallery?url=${encodeURIComponent(session.page_url)}`;
+      const url = `https://fetchhub.px-tester.workers.dev/gallery?url=${encodeURIComponent(session.page_url)}`;
       chrome.tabs.create({ url });
     });
   } catch (error) {

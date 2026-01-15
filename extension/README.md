@@ -14,11 +14,14 @@ Visual feedback tool for any webpage. Capture screenshots, annotate with area se
 - 🤝 **Team Collaboration** - View all feedback via web gallery
 
 ## Installation
-Download updated extension:
-Go to: https://github.com/leah-wang-design/fetchhub
-Click "Code" → "Download ZIP"
-Unzip to your file.
-
+1. Load Unpacked (Development)
+2. Open Chrome and navigate to chrome://extensions/
+3. Enable Developer mode (toggle in top right)
+4. Click "Load unpacked"
+5. Select the extension directory: /Users/leahwang/design-feedback/extension/
+6. Extension installed! Look for the 📸 icon in your toolbar
+7. Authenticate FIRST: Visit: https://fetchhub.px-tester.workers.dev Login with your @cloudflare.com email via Cloudflare Access
+8. Then use extension: Extension will now work on any webpage Your name will show correctly.
 ### Load Unpacked (Development)
 
 1. Open Chrome and navigate to `chrome://extensions/`
@@ -26,12 +29,6 @@ Unzip to your file.
 3. Click **"Load unpacked"**
 4. Select the `extension` directory: `/Users/leahwang/design-feedback/extension/`
 5. Extension installed! Look for the 📸 icon in your toolbar
-6. Authenticate FIRST:
-Visit: https://fetchhub.px-tester.workers.dev
-Login with your @cloudflare.com email via Cloudflare Access
-7. Then use extension:
-Extension will now work on any webpage
-Your name will show correctly.
 
 ### Production (Coming Soon)
 Will be available on Chrome Web Store
@@ -43,7 +40,7 @@ Will be available on Chrome Web Store
 **Option 1: Via Extension Icon**
 1. Click the extension icon in toolbar
 2. Click **"Start Reviewing"**
-3. A floating "Add Comment" button appears on the page
+3. A floating "📸 Add Comment" button appears on the page
 
 **Option 2: Via Keyboard Shortcut** (Coming Soon)
 - Press `Alt+Shift+F` to toggle review mode
@@ -51,7 +48,7 @@ Will be available on Chrome Web Store
 ### Add Comments
 
 1. With review mode active, interact with the page normally
-2. When ready to capture feedback, click **"Add Comment"**
+2. When ready to capture feedback, click **"📸 Add Comment"**
 3. Screenshot captured → annotation mode opens
 4. **Drag to select areas** on the screenshot (pink highlights)
 5. **Enter comment text** in the modal
@@ -70,7 +67,7 @@ After capturing all screenshots:
 
 - Click extension icon → See recent reviews
 - Click **"View All Sessions"** → Opens web gallery
-- Or visit: https://design-feedback.px-tester.workers.dev
+- Or visit: https://fetchhub.px-tester.workers.dev
 
 ## How It Works
 
@@ -126,7 +123,7 @@ Web Gallery (View Sessions)
 ## API Backend
 
 Extension connects to existing Cloudflare Worker:
-- **Base URL**: `https://design-feedback.px-tester.workers.dev`
+- **Base URL**: `https://fetchhub.px-tester.workers.dev`
 - **Endpoints**: Same as web app (screenshots, comments, sessions)
 
 ## Troubleshooting
