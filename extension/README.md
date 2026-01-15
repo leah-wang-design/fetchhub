@@ -33,7 +33,7 @@ Will be available on Chrome Web Store
 **Option 1: Via Extension Icon**
 1. Click the extension icon in toolbar
 2. Click **"Start Reviewing"**
-3. A floating "📸 Add Comment" button appears on the page
+3. A floating "Add Comment" button appears on the page
 
 **Option 2: Via Keyboard Shortcut** (Coming Soon)
 - Press `Alt+Shift+F` to toggle review mode
@@ -41,7 +41,7 @@ Will be available on Chrome Web Store
 ### Add Comments
 
 1. With review mode active, interact with the page normally
-2. When ready to capture feedback, click **"📸 Add Comment"**
+2. When ready to capture feedback, click **"Add Comment"**
 3. Screenshot captured → annotation mode opens
 4. **Drag to select areas** on the screenshot (pink highlights)
 5. **Enter comment text** in the modal
