@@ -1,0 +1,230 @@
+/* Floating Button Container */
+#df-floating-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483646;
+  
+  display: flex;
+  align-items: center;
+  gap: 0;
+  
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+#df-floating-button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Add Comment Button */
+#df-add-comment-btn {
+  padding: 6px 12px 6px 16px;
+  background: #000000;
+  color: white;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.23);
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  border-radius: 8px 0 0 8px;
+  height: 34px;
+  letter-spacing: 0.02857em;
+  text-transform: uppercase;
+  
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#df-add-comment-btn:hover {
+  background: #DDB071;
+}
+
+/* Exit Button */
+#df-exit-btn {
+  padding: 0px 0px 0.5px 0;
+  width: 36px;
+  background: #000000;
+  color: white;
+  border: none;
+  font-size: 20px;
+  font-weight: 300;
+  cursor: pointer;
+  line-height: 1;
+  border-radius: 0 8px 8px 0;
+  height: 34px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#df-exit-btn:hover {
+  background: #DDB071;
+}
+
+/* Annotation Overlay */
+#df-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  background: rgba(0, 0, 0, 0.9);
+  
+  display: flex;
+  flex-direction: column;
+}
+
+#df-overlay-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 24px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#df-overlay-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  color: #111827;
+}
+
+#df-overlay-header p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #374151;
+}
+
+#df-overlay-actions {
+  display: flex;
+  gap: 12px;
+}
+
+#df-overlay-actions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+#df-cancel-btn {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+#df-cancel-btn:hover {
+  background: #f9fafb;
+}
+
+#df-save-btn {
+  background: #000000;
+  color: white;
+}
+
+#df-save-btn:hover {
+  background: #DDB071;
+}
+
+#df-save-btn:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+
+#df-modal-submit:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Canvas */
+#df-canvas {
+  flex: 1;
+  cursor: crosshair;
+  max-width: 100%;
+  max-height: calc(100vh - 80px);
+  margin: auto;
+  display: block;
+}
+
+/* Comment Modal */
+#df-comment-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483648;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.df-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.df-modal-content {
+  position: relative;
+  background: white;
+  border-radius: 14px;
+  max-width: 480px;
+  width: 100%;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#df-comment-text {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  background: transparent;
+}
+
+#df-comment-text::placeholder {
+  color: #999;
+}
+
+#df-modal-submit {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #000000;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+#df-modal-submit:hover {
+  background: #DDB071;
+}
+
+#df-modal-submit svg {
+  transform: rotate(-135deg);
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fetch</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <h1 class="title">Fetch</h1>
+    
+    <a href="https://design-feedback.px-tester.workers.dev/" target="_blank">
+      <img src="../dog.png" alt="" class="logo">
+    </a>
+    
+    <button id="toggle-mode" class="main-btn">Start review</button>
+    
+    
+    <a href="https://design-feedback.px-tester.workers.dev/" target="_blank" class="learn-more-link">Learn more</a>
+    
+    <div class="recent-section">
+      <div class="recent-header">
+        <h2 class="recent-title">Recent Review</h2>
+        <a href="https://design-feedback.px-tester.workers.dev" target="_blank" class="view-all-link">
+          View All Sessions →
+        </a>
+      </div>
+      <div id="recent-review" class="recent-review">
+        <div class="loading-text">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
