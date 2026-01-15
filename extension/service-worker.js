@@ -1,5 +1,14 @@
 const API_BASE = 'https://fetchhub.px-tester.workers.dev/api';
 
+// Helper function to get headers
+function getAuthHeaders(contentType = 'application/json') {
+  const headers = {};
+  if (contentType) {
+    headers['Content-Type'] = contentType;
+  }
+  return headers;
+}
+
 let reviewSessions = {};
 
 // Clean up tab state when tabs are closed
@@ -104,20 +113,27 @@ async function getImageDimensions(dataUrl) {
 
 async function getUserInfo() {
   try {
+    // First check cache
     const result = await chrome.storage.local.get(['userName']);
     if (result.userName) {
       return { name: result.userName };
     }
 
+    // Fetch authenticated user from API
     try {
-      const userInfo = await chrome.identity.getProfileUserInfo();
-      if (userInfo.email) {
-        const name = userInfo.email.split('@')[0];
+      const response = await fetch(`${API_BASE}/user`, {
+        headers: getAuthHeaders(null)
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const name = data.name || data.email?.split('@')[0] || 'User';
+        // Cache for future use
         await chrome.storage.local.set({ userName: name });
         return { name };
       }
     } catch (e) {
-      // Silently fallback to anonymous
+      console.error('Failed to fetch user info:', e);
     }
 
     return { name: 'Anonymous' };
@@ -134,7 +150,7 @@ async function handleSaveSession(sessionData) {
       
       const screenshotResponse = await fetch(`${API_BASE}/screenshots`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           page_url: screenshot.url,
           page_title: screenshot.title,
@@ -156,7 +172,7 @@ async function handleSaveSession(sessionData) {
         
         const commentResponse = await fetch(`${API_BASE}/comments`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
           body: JSON.stringify({
             screenshot_id: savedScreenshot.id,
             x: comment.x,
@@ -178,7 +194,9 @@ async function handleSaveSession(sessionData) {
 
 async function getSessions() {
   try {
-    const response = await fetch(`${API_BASE}/sessions`);
+    const response = await fetch(`${API_BASE}/sessions`, {
+      headers: getAuthHeaders(null)
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch sessions');
     }
@@ -191,7 +209,9 @@ async function getSessions() {
 
 async function getScreenshots(pageUrl) {
   try {
-    const response = await fetch(`${API_BASE}/screenshots?url=${encodeURIComponent(pageUrl)}`);
+    const response = await fetch(`${API_BASE}/screenshots?url=${encodeURIComponent(pageUrl)}`, {
+      headers: getAuthHeaders(null)
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch screenshots');
     }
@@ -205,7 +225,8 @@ async function getScreenshots(pageUrl) {
 async function deleteScreenshot(screenshotId) {
   try {
     const response = await fetch(`${API_BASE}/screenshots?id=${encodeURIComponent(screenshotId)}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders(null)
     });
     if (!response.ok) {
       throw new Error('Failed to delete screenshot');
@@ -219,7 +240,8 @@ async function deleteScreenshot(screenshotId) {
 async function deleteSession(pageUrl) {
   try {
     const response = await fetch(`${API_BASE}/screenshots?url=${encodeURIComponent(pageUrl)}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders(null)
     });
     if (!response.ok) {
       throw new Error('Failed to delete session');
