@@ -503,14 +503,7 @@ async function saveAnnotation() {
       return;
     }
     
-    alert('Feedback saved successfully!');
-    
-    // Ask if they want to add more
-    const addMore = confirm('Add another screenshot?');
-    if (!addMore) {
-      reviewMode = false;
-      floatingButton.style.display = 'none';
-    }
+    alert('Feedback saved successfully! Click the button to add another screenshot, or exit review mode when done.');
   } catch (error) {
     console.error('Save failed:', error);
     alert('Failed to save feedback: ' + error.message);
