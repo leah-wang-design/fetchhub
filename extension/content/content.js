@@ -14,6 +14,79 @@ let overlay;
 let canvas;
 let commentModal;
 
+// Custom Modal Functions
+function showAlert(message) {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.id = 'df-alert-modal';
+    modal.innerHTML = `
+      <div class="df-alert-content">
+        <button class="df-alert-close" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        <p class="df-alert-message">${message}</p>
+        <div class="df-alert-buttons">
+          <button class="df-alert-button df-alert-button-primary">OK</button>
+        </div>
+      </div>
+    `;
+    
+    const closeModal = () => {
+      modal.remove();
+      resolve();
+    };
+    
+    modal.querySelector('.df-alert-close').onclick = closeModal;
+    modal.querySelector('.df-alert-button-primary').onclick = closeModal;
+    modal.onclick = (e) => {
+      if (e.target === modal) closeModal();
+    };
+    
+    document.body.appendChild(modal);
+  });
+}
+
+function showConfirm(title, message, confirmText = 'OK', confirmVariant = 'primary') {
+  return new Promise((resolve) => {
+    const modal = document.createElement('div');
+    modal.id = 'df-alert-modal';
+    
+    const variantClass = confirmVariant === 'danger' ? 'df-alert-button-danger' : 'df-alert-button-primary';
+    
+    modal.innerHTML = `
+      <div class="df-alert-content">
+        <button class="df-alert-close" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        <h3 class="df-alert-title">${title}</h3>
+        <p class="df-alert-message">${message}</p>
+        <div class="df-alert-buttons">
+          <button class="df-alert-button df-alert-button-tertiary">Cancel</button>
+          <button class="df-alert-button ${variantClass}">${confirmText}</button>
+        </div>
+      </div>
+    `;
+    
+    const closeModal = (result) => {
+      modal.remove();
+      resolve(result);
+    };
+    
+    modal.querySelector('.df-alert-close').onclick = () => closeModal(false);
+    modal.querySelector('.df-alert-button-tertiary').onclick = () => closeModal(false);
+    modal.querySelector(`.${variantClass}`).onclick = () => closeModal(true);
+    modal.onclick = (e) => {
+      if (e.target === modal) closeModal(false);
+    };
+    
+    document.body.appendChild(modal);
+  });
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
@@ -268,7 +341,7 @@ async function captureScreenshot() {
     const response = await chrome.runtime.sendMessage({ action: 'captureScreenshot' });
     
     if (response.error) {
-      alert('Failed to capture screenshot: ' + response.error);
+      await showAlert('Failed to capture screenshot: ' + response.error);
       return;
     }
     
@@ -277,7 +350,7 @@ async function captureScreenshot() {
     showAnnotationMode();
   } catch (error) {
     console.error('Capture failed:', error);
-    alert('Failed to capture screenshot');
+    await showAlert('Failed to capture screenshot.');
   }
 }
 
@@ -404,8 +477,10 @@ function showCommentModal(x, y, width, height) {
   // Add submit handler
   newSubmitBtn.onclick = () => {
     const text = input.value.trim();
+    console.log('[DEBUG] Comment submit clicked, text:', text);
     if (text) {
       currentComments.push({ x, y, width, height, text });
+      console.log('[DEBUG] Comment added. Total comments:', currentComments.length);
       commentModal.style.display = 'none';
       redrawCanvas();
       updateCommentCount();
@@ -452,13 +527,21 @@ function redrawCanvas() {
 }
 
 function updateCommentCount() {
-  document.getElementById('df-comment-count').textContent = currentComments.length;
-  document.getElementById('df-save-btn').disabled = currentComments.length === 0;
+  const count = currentComments.length;
+  console.log('[DEBUG] updateCommentCount called. Comments:', count);
+  document.getElementById('df-comment-count').textContent = count;
+  document.getElementById('df-save-btn').disabled = count === 0;
+  console.log('[DEBUG] Save button disabled:', count === 0);
 }
 
-function cancelAnnotation() {
+async function cancelAnnotation() {
   if (currentComments.length > 0) {
-    const discard = confirm('Discard this screenshot and all comments?');
+    const discard = await showConfirm(
+      'Are you sure you want to discard this screenshot?',
+      'All comments will be lost.',
+      'Discard',
+      'danger'
+    );
     if (!discard) return;
   }
   
@@ -468,11 +551,15 @@ function cancelAnnotation() {
 }
 
 async function saveAnnotation() {
+  console.log('[DEBUG] saveAnnotation called! Comments:', currentComments.length);
+  
   if (currentComments.length === 0) {
-    alert('Please add at least one comment');
+    console.log('[DEBUG] No comments, showing alert');
+    await showAlert('Please add at least one comment.');
     return;
   }
   
+  console.log('[DEBUG] Preparing to save screenshot with comments');
   const screenshotToSave = {
     imageData: currentScreenshot.screenshot,
     width: currentScreenshot.width,
@@ -499,14 +586,14 @@ async function saveAnnotation() {
     });
     
     if (response.error) {
-      alert('Failed to save: ' + response.error);
+      await showAlert('Failed to save: ' + response.error);
       return;
     }
     
-    alert('Feedback saved successfully! Click the button to add another screenshot, or exit review mode when done.');
+    await showAlert('Feedback saved successfully! Click the button to add another screenshot, or exit review mode when done.');
   } catch (error) {
     console.error('Save failed:', error);
-    alert('Failed to save feedback: ' + error.message);
+    await showAlert('Failed to save feedback: ' + error.message);
   }
 }
 
@@ -525,16 +612,16 @@ async function saveSession() {
     });
     
     if (response.error) {
-      alert('Failed to save: ' + response.error);
+      await showAlert('Failed to save: ' + response.error);
       return;
     }
     
-    alert('Feedback saved successfully!');
+    await showAlert('Feedback saved successfully!');
     sessionScreenshots = [];
     reviewMode = false;
     floatingButton.style.display = 'none';
   } catch (error) {
     console.error('Save failed:', error);
-    alert('Failed to save feedback');
+    await showAlert('Failed to save feedback.');
   }
 }
