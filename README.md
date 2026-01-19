@@ -24,7 +24,7 @@ Visual feedback tool for any webpage. Capture screenshots, annotate with area se
 3. Click **"Load unpacked"**
 4. Select the `extension` directory: `/Users/leahwang/design-feedback/extension/`
 5. Extension installed! Look for the 'fetch' extension in your toolbar
-6. Authenticate FIRST: Visit: https://fetchhub.px-tester.workers.dev **in the same browser** Login with your @cloudflare.com email via Cloudflare Access
+6. Authenticate FIRST: Visit: https://fetchhub.px-tester.workers.dev **in the same browser**. Login with your @cloudflare.com email via Cloudflare Access
 7. Then use extension. Note: you need to view the webpage in the **same browser** where you have the extension installed.
 
 ### Production (Coming Soon)
@@ -47,14 +47,8 @@ Will be available on Chrome Web Store
 5. **Enter comment text** in the modal and confirm with the up arrow.
 6. Back to page view → can add more screenshots
 7. Click **"SAVE"** once you are done
+8. You can choose a workspace you to save the screenshots, if you don't have a specific destination, save to **default**.
 
-### Save Session
-
-After capturing all screenshots:
-1. Click **"Save"** button in annotation mode
-2. Or get prompted when exiting review mode
-3. Extension auto-detects URL and your name
-4. All screenshots + comments saved to cloud
 
 ### View Feedback
 
