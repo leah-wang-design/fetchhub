@@ -19,12 +19,12 @@ Visual feedback tool for any webpage. Capture screenshots, annotate with area se
 3. Unzip to your local directory
 
 ### Load Unpacked (Development)
-1. Open Chrome, **Login your PERSONAL gmail**and navigate to `chrome://extensions/`
+1. Open Chrome, **Login your PERSONAL gmail**and navigate to `chrome://extensions/` **in the same browser**
 2. Enable **Developer mode** (toggle in top right)
 3. Click **"Load unpacked"**
 4. Select the `extension` directory: `/Users/leahwang/design-feedback/extension/`
-5. Extension installed! Look for the 📸 icon in your toolbar
-6. Authenticate FIRST: Visit: https://fetchhub.px-tester.workers.dev Login with your @cloudflare.com email via Cloudflare Access
+5. Extension installed! Look for the 'fetch' extension in your toolbar
+6. Authenticate FIRST: Visit: https://fetchhub.px-tester.workers.dev **in the same browser** Login with your @cloudflare.com email via Cloudflare Access
 7. Then use extension. Note: you need to view the webpage in the **same browser** where you have the extension installed.
 
 ### Production (Coming Soon)
