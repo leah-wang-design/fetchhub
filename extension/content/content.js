@@ -15,6 +15,28 @@ let canvas;
 let commentModal;
 
 // Custom Modal Functions
+function showToast(message, duration = 3000) {
+  const toast = document.createElement('div');
+  toast.id = 'df-toast';
+  toast.className = 'df-toast';
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  // Trigger animation
+  setTimeout(() => {
+    toast.classList.add('df-toast-show');
+  }, 10);
+  
+  // Auto dismiss
+  setTimeout(() => {
+    toast.classList.remove('df-toast-show');
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, duration);
+}
+
 function showAlert(message) {
   return new Promise((resolve) => {
     const modal = document.createElement('div');
@@ -368,10 +390,17 @@ function createFloatingButton() {
   container.id = 'df-floating-button';
   container.style.display = 'none';
   
+  // Add drag handle
+  const dragHandle = document.createElement('div');
+  dragHandle.id = 'df-drag-handle';
+  dragHandle.title = 'Drag to reposition';
+  dragHandle.innerHTML = '⋮'; // vertical ellipsis
+  
   const button = document.createElement('button');
   button.id = 'df-add-comment-btn';
   button.innerHTML = 'Add Comment';
-  button.addEventListener('click', () => {
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
     captureScreenshot();
   });
   
@@ -379,14 +408,114 @@ function createFloatingButton() {
   exitButton.id = 'df-exit-btn';
   exitButton.innerHTML = '×';
   exitButton.title = 'Exit Review Mode';
-  exitButton.addEventListener('click', () => {
-    toggleReviewMode();
+  exitButton.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    console.log('Exit button clicked, reviewMode before:', reviewMode);
+    await toggleReviewMode();
+    console.log('Exit button clicked, reviewMode after:', reviewMode);
   });
   
+  // Prevent mousedown on buttons from triggering any parent handlers
+  [button, exitButton].forEach(btn => {
+    btn.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+    });
+  });
+  
+  container.appendChild(dragHandle);
   container.appendChild(button);
   container.appendChild(exitButton);
   
+  // Make draggable
+  makeDraggable(container);
+  
+  // Restore saved position
+  restoreButtonPosition(container);
+  
   return container;
+}
+
+function makeDraggable(element) {
+  let isDragging = false;
+  let dragStarted = false;
+  let startX, startY, initialLeft, initialTop;
+  const dragThreshold = 5; // pixels to move before dragging starts
+  
+  const dragHandle = element.querySelector('#df-drag-handle');
+  
+  dragHandle.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    dragStarted = false;
+    startX = e.clientX;
+    startY = e.clientY;
+    
+    const rect = element.getBoundingClientRect();
+    initialLeft = rect.left;
+    initialTop = rect.top;
+    
+    dragHandle.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - startX;
+    const deltaY = e.clientY - startY;
+    
+    const newLeft = initialLeft + deltaX;
+    const newTop = initialTop + deltaY;
+    
+    // Keep within viewport bounds
+    const maxLeft = window.innerWidth - element.offsetWidth;
+    const maxTop = window.innerHeight - element.offsetHeight;
+    
+    const boundedLeft = Math.max(0, Math.min(newLeft, maxLeft));
+    const boundedTop = Math.max(0, Math.min(newTop, maxTop));
+    
+    element.style.setProperty('left', `${boundedLeft}px`, 'important');
+    element.style.setProperty('top', `${boundedTop}px`, 'important');
+    element.style.setProperty('right', 'auto', 'important');
+    element.style.setProperty('bottom', 'auto', 'important');
+  });
+  
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      dragHandle.style.cursor = 'grab';
+      
+      // Save position
+      saveButtonPosition(element);
+    }
+  });
+  
+  // Add grab cursor hint to drag handle
+  dragHandle.style.cursor = 'grab';
+}
+
+async function saveButtonPosition(element) {
+  const rect = element.getBoundingClientRect();
+  await chrome.storage.local.set({
+    floatingButtonPosition: {
+      left: rect.left,
+      top: rect.top
+    }
+  });
+}
+
+async function restoreButtonPosition(element) {
+  try {
+    const result = await chrome.storage.local.get(['floatingButtonPosition']);
+    if (result.floatingButtonPosition) {
+      const { left, top } = result.floatingButtonPosition;
+      element.style.setProperty('left', `${left}px`, 'important');
+      element.style.setProperty('top', `${top}px`, 'important');
+      element.style.setProperty('right', 'auto', 'important');
+      element.style.setProperty('bottom', 'auto', 'important');
+    }
+  } catch (error) {
+    // Use default position if restore fails
+  }
 }
 
 function createOverlay() {
@@ -399,7 +528,7 @@ function createOverlay() {
   header.innerHTML = `
     <div>
       <h2>Add Comments</h2>
-      <p>Drag to select an area, then add your feedback</p>
+      <p>Drag to select an area, then add your comments</p>
     </div>
     <div id="df-overlay-actions">
       <button id="df-cancel-btn">Cancel</button>
@@ -470,13 +599,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function toggleReviewMode() {
+  console.log('toggleReviewMode called, current reviewMode:', reviewMode);
   reviewMode = !reviewMode;
+  console.log('reviewMode toggled to:', reviewMode);
   
   // Save state to storage
   await saveReviewModeState(reviewMode);
+  console.log('State saved to storage');
   
   if (floatingButton) {
-    floatingButton.style.display = reviewMode ? 'flex' : 'none';
+    const newDisplay = reviewMode ? 'flex' : 'none';
+    console.log('Setting floatingButton display to:', newDisplay);
+    floatingButton.style.setProperty('display', newDisplay, 'important');
+    console.log('floatingButton.style.display is now:', floatingButton.style.display);
+  } else {
+    console.log('floatingButton is null or undefined!');
   }
 }
 
@@ -760,39 +897,10 @@ async function saveAnnotation() {
         return;
       }
       
-      await showAlert('Feedback saved successfully! Click the button to add another screenshot, or exit review mode when done.');
+      showToast('Comments saved successfully!');
     } catch (error) {
       console.error('Save failed:', error);
-      await showAlert('Failed to save feedback: ' + error.message);
+      await showAlert('Failed to save comments: ' + error.message);
     }
   };
-}
-
-async function saveSession() {
-  if (sessionScreenshots.length === 0) return;
-  
-  try {
-    const userInfo = await chrome.runtime.sendMessage({ action: 'getUserInfo' });
-    
-    const response = await chrome.runtime.sendMessage({
-      action: 'saveSession',
-      data: {
-        screenshots: sessionScreenshots,
-        userName: userInfo.name
-      }
-    });
-    
-    if (response.error) {
-      await showAlert('Failed to save: ' + response.error);
-      return;
-    }
-    
-    await showAlert('Feedback saved successfully!');
-    sessionScreenshots = [];
-    reviewMode = false;
-    floatingButton.style.display = 'none';
-  } catch (error) {
-    console.error('Save failed:', error);
-    await showAlert('Failed to save feedback.');
-  }
 }
