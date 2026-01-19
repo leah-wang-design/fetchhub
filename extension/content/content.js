@@ -87,6 +87,150 @@ function showConfirm(title, message, confirmText = 'OK', confirmVariant = 'prima
   });
 }
 
+function createWorkspaceModal(workspaces) {
+  const modal = document.createElement('div');
+  modal.id = 'df-workspace-modal';
+  
+  const defaultWorkspace = workspaces.find(w => w.id === 'default') || workspaces[0];
+  
+  modal.innerHTML = `
+    <div class="df-workspace-overlay">
+      <div class="df-workspace-content">
+        <button class="df-alert-close" id="df-workspace-close" aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        <h3>Save to Workspace</h3>
+        <p class="df-workspace-description">
+          Choose a workspace to save your reviews. You can also <a href="https://fetchhub.px-tester.workers.dev/workspaces" target="_blank" rel="noopener noreferrer">manage or create workspaces</a> on the web app.
+        </p>
+
+        <div class="df-workspace-dropdown-container">
+          <button id="df-workspace-dropdown-button" class="df-workspace-dropdown-button" data-selected="${defaultWorkspace.id}">
+            <span class="df-workspace-dropdown-text">${defaultWorkspace.name}</span>
+            <svg class="df-workspace-dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="df-workspace-dropdown-menu" class="df-workspace-dropdown-menu" style="display: none;">
+            <div class="df-workspace-search-container">
+              <svg class="df-workspace-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input type="text" id="df-workspace-search" class="df-workspace-search-input" placeholder="Search workspaces..." autocomplete="off">
+            </div>
+            <div id="df-workspace-list" class="df-workspace-list">
+              ${workspaces.map(w => 
+                `<button class="df-workspace-dropdown-item" data-value="${w.id}" data-type="workspace" data-name="${w.name.toLowerCase()}">
+                  ${w.name}
+                </button>`
+              ).join('')}
+            </div>
+            <div id="df-workspace-no-results" class="df-workspace-no-results" style="display: none;">
+              No workspaces found
+            </div>
+          </div>
+        </div>
+        
+        <div class="df-workspace-buttons">
+          <button id="df-workspace-cancel" class="df-workspace-button-secondary">Cancel</button>
+          <button id="df-workspace-save" class="df-workspace-button-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Set up dropdown functionality
+  setTimeout(() => {
+    const closeButton = modal.querySelector('#df-workspace-close');
+    const dropdownButton = modal.querySelector('#df-workspace-dropdown-button');
+    const dropdownMenu = modal.querySelector('#df-workspace-dropdown-menu');
+    const dropdownText = modal.querySelector('.df-workspace-dropdown-text');
+    const searchInput = modal.querySelector('#df-workspace-search');
+    const workspaceList = modal.querySelector('#df-workspace-list');
+    const noResults = modal.querySelector('#df-workspace-no-results');
+    const dropdownItems = modal.querySelectorAll('.df-workspace-dropdown-item');
+    
+    // Handle close button
+    closeButton.addEventListener('click', () => {
+      modal.remove();
+    });
+    
+    dropdownButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdownMenu.style.display === 'block';
+      dropdownMenu.style.display = isOpen ? 'none' : 'block';
+      if (dropdownMenu.style.display === 'block') {
+        searchInput.value = '';
+        searchInput.focus();
+        // Reset filter
+        dropdownItems.forEach(item => item.style.display = 'block');
+        workspaceList.style.display = 'block';
+        noResults.style.display = 'none';
+      }
+    });
+    
+    // Handle search input
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      let hasResults = false;
+      
+      dropdownItems.forEach(item => {
+        const name = item.getAttribute('data-name');
+        if (name.includes(searchTerm)) {
+          item.style.display = 'block';
+          hasResults = true;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      workspaceList.style.display = hasResults ? 'block' : 'none';
+      noResults.style.display = hasResults ? 'none' : 'block';
+    });
+    
+    searchInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+    
+    dropdownItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const value = item.getAttribute('data-value');
+        const text = item.textContent.trim();
+        dropdownButton.setAttribute('data-selected', value);
+        dropdownText.textContent = text;
+        dropdownMenu.style.display = 'none';
+      });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.style.display = 'none';
+      }
+    });
+  }, 0);
+  
+  return modal;
+}
+
+async function fetchWorkspaces() {
+  try {
+    const response = await chrome.runtime.sendMessage({ action: 'getWorkspaces' });
+    if (response.error) {
+      console.error('Failed to fetch workspaces:', response.error);
+      return [{ id: 'default', name: 'Default Workspace' }];
+    }
+    return response.workspaces || [{ id: 'default', name: 'Default Workspace' }];
+  } catch (error) {
+    console.error('Failed to fetch workspaces:', error);
+    return [{ id: 'default', name: 'Default Workspace' }];
+  }
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
@@ -559,42 +703,69 @@ async function saveAnnotation() {
     return;
   }
   
-  console.log('[DEBUG] Preparing to save screenshot with comments');
-  const screenshotToSave = {
-    imageData: currentScreenshot.screenshot,
-    width: currentScreenshot.width,
-    height: currentScreenshot.height,
-    url: currentScreenshot.url,
-    title: currentScreenshot.title,
-    comments: currentComments
+  // Fetch workspaces and show modal
+  const workspaces = await fetchWorkspaces();
+  const workspaceModal = createWorkspaceModal(workspaces);
+  document.body.appendChild(workspaceModal);
+  
+  const dropdownButton = document.getElementById('df-workspace-dropdown-button');
+  const cancelBtn = document.getElementById('df-workspace-cancel');
+  const saveBtn = document.getElementById('df-workspace-save');
+  
+  // Handle cancel
+  cancelBtn.onclick = () => {
+    workspaceModal.remove();
   };
   
-  currentScreenshot = null;
-  currentComments = [];
-  hideAnnotationMode();
-  
-  // Auto-save to backend immediately
-  try {
-    const userInfo = await chrome.runtime.sendMessage({ action: 'getUserInfo' });
+  // Handle save
+  saveBtn.onclick = async () => {
+    const selectedWorkspaceId = dropdownButton.getAttribute('data-selected');
     
-    const response = await chrome.runtime.sendMessage({
-      action: 'saveSession',
-      data: {
-        screenshots: [screenshotToSave],
-        userName: userInfo.name
-      }
-    });
-    
-    if (response.error) {
-      await showAlert('Failed to save: ' + response.error);
+    if (!selectedWorkspaceId) {
+      await showAlert('Please select a workspace');
       return;
     }
     
-    await showAlert('Feedback saved successfully! Click the button to add another screenshot, or exit review mode when done.');
-  } catch (error) {
-    console.error('Save failed:', error);
-    await showAlert('Failed to save feedback: ' + error.message);
-  }
+    workspaceModal.remove();
+    
+    console.log('[DEBUG] Preparing to save screenshot with comments to workspace:', selectedWorkspaceId);
+    const screenshotToSave = {
+      imageData: currentScreenshot.screenshot,
+      width: currentScreenshot.width,
+      height: currentScreenshot.height,
+      url: currentScreenshot.url,
+      title: currentScreenshot.title,
+      comments: currentComments,
+      workspace_id: selectedWorkspaceId
+    };
+    
+    currentScreenshot = null;
+    currentComments = [];
+    hideAnnotationMode();
+    
+    // Save to backend with workspace
+    try {
+      const userInfo = await chrome.runtime.sendMessage({ action: 'getUserInfo' });
+      
+      const response = await chrome.runtime.sendMessage({
+        action: 'saveSession',
+        data: {
+          screenshots: [screenshotToSave],
+          userName: userInfo.name
+        }
+      });
+      
+      if (response.error) {
+        await showAlert('Failed to save: ' + response.error);
+        return;
+      }
+      
+      await showAlert('Feedback saved successfully! Click the button to add another screenshot, or exit review mode when done.');
+    } catch (error) {
+      console.error('Save failed:', error);
+      await showAlert('Failed to save feedback: ' + error.message);
+    }
+  };
 }
 
 async function saveSession() {

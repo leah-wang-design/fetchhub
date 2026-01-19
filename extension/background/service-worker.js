@@ -70,6 +70,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => sendResponse({ error: error.message }));
     return true;
   }
+
+  if (request.action === 'getWorkspaces') {
+    getWorkspaces()
+      .then(sendResponse)
+      .catch(error => sendResponse({ error: error.message }));
+    return true;
+  }
+
+  if (request.action === 'openWorkspacesPage') {
+    chrome.tabs.create({ url: 'https://fetchhub.px-tester.workers.dev/workspaces' });
+    sendResponse({ success: true });
+    return true;
+  }
 });
 
 async function handleCaptureScreenshot(tabId, url, title) {
@@ -157,7 +170,8 @@ async function handleSaveSession(sessionData) {
           image_data: screenshot.imageData,
           width: screenshot.width,
           height: screenshot.height,
-          created_by: userName
+          created_by: userName,
+          workspace_id: screenshot.workspace_id || 'default'
         })
       });
 
@@ -247,6 +261,21 @@ async function deleteSession(pageUrl) {
       throw new Error('Failed to delete session');
     }
     return { success: true };
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getWorkspaces() {
+  try {
+    const response = await fetch(`${API_BASE}/workspaces`, {
+      headers: getAuthHeaders(null)
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch workspaces');
+    }
+    const data = await response.json();
+    return { workspaces: data.workspaces || [] };
   } catch (error) {
     throw error;
   }
