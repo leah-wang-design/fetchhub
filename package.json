@@ -1,0 +1,20 @@
+{
+  "name": "design-feedback",
+  "version": "1.0.0",
+  "description": "Collaborative visual feedback tool for design reviews",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev:frontend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:worker": "cd worker && wrangler dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "deploy": "npm run build && cd worker && wrangler deploy",
+    "db:create": "cd worker && wrangler d1 create design-feedback-db",
+    "db:migrate": "cd worker && wrangler d1 migrations apply design-feedback-db",
+    "db:migrate:local": "cd worker && wrangler d1 migrations apply design-feedback-db --local"
+  },
+  "keywords": ["design", "feedback", "cloudflare", "workers"],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,13 @@
+name = "fetchhub"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+account_id = "49117820acd5ccaea75d0736a41b51da"
+
+[[ d1_databases ]]
+binding = "DB"
+database_name = "design-feedback-db"
+database_id = "1fbb03d2-0059-4f35-b52c-20a4c2334942"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
