@@ -11,3 +11,7 @@ database_id = "1fbb03d2-0059-4f35-b52c-20a4c2334942"
 [assets]
 directory = "./public"
 binding = "ASSETS"
+
+[vars]
+CF_ACCESS_TEAM_NAME = "px-tester"
+CF_ACCESS_AUD = "90e48f28f6827630b3f9ee7d2cbc6a6541b82474e126d39fcac5c9861d1dce9e"

@@ -1,3 +1,4 @@
+import { jwtVerify, createRemoteJWKSet } from 'jose';
 import type { Env } from './types';
 
 export interface AuthenticatedUser {
@@ -29,8 +30,19 @@ export async function authenticateRequest(
   }
 
   try {
-    // Parse JWT payload (Cloudflare Access JWTs are already verified by the proxy)
-    const payload = parseJwt(jwt);
+    // Verify JWT using Cloudflare Access public keys
+    // Replace YOUR_TEAM_NAME with your actual Cloudflare Access team name
+    const teamName = env.CF_ACCESS_TEAM_NAME || 'cloudflare';
+    const certsUrl = `https://${teamName}.cloudflareaccess.com/cdn-cgi/access/certs`;
+    
+    const JWKS = createRemoteJWKSet(new URL(certsUrl));
+    
+    // Verify the JWT signature and validate claims
+    const { payload } = await jwtVerify(jwt, JWKS, {
+      issuer: `https://${teamName}.cloudflareaccess.com`,
+      audience: env.CF_ACCESS_AUD || '',
+    });
+
     const email = payload.email as string;
 
     if (!email || !email.endsWith('@cloudflare.com')) {
@@ -66,21 +78,6 @@ export async function authenticateRequest(
     console.error('Authentication error:', error);
     return null;
   }
-}
-
-/**
- * Parse JWT payload without verification (verification handled by Cloudflare Access)
- */
-function parseJwt(token: string): any {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(
-    atob(base64)
-      .split('')
-      .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-      .join('')
-  );
-  return JSON.parse(jsonPayload);
 }
 
 /**
