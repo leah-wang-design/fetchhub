@@ -31,7 +31,6 @@ export async function authenticateRequest(
 
   try {
     // Verify JWT using Cloudflare Access public keys
-    // Replace YOUR_TEAM_NAME with your actual Cloudflare Access team name
     const teamName = env.CF_ACCESS_TEAM_NAME || 'cloudflare';
     const certsUrl = `https://${teamName}.cloudflareaccess.com/cdn-cgi/access/certs`;
     

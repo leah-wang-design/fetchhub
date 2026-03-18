@@ -13,5 +13,12 @@ directory = "./public"
 binding = "ASSETS"
 
 [vars]
-CF_ACCESS_TEAM_NAME = "px-tester"
+CF_ACCESS_TEAM_NAME = "pxtester"
 CF_ACCESS_AUD = "90e48f28f6827630b3f9ee7d2cbc6a6541b82474e126d39fcac5c9861d1dce9e"
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
