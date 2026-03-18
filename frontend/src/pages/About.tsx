@@ -15,6 +15,7 @@ export default function About() {
     }
     setExpandedItems(newExpanded);
   };
+
   return (
     <div className="flex flex-col h-full bg-cream dark:bg-gray-900">
       <NavBar />
@@ -55,8 +56,9 @@ export default function About() {
               </div>
             </div>
 
-            {/* Right Column - Troubleshooting Card */}
-            <div className="lg:col-span-7">
+            {/* Right Column - Troubleshooting & Privacy */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Troubleshooting Card */}
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-stone-200 dark:border-gray-700 p-6">
                 <h3 className={`${typography.h4} mb-4`}>
                   Troubleshooting
@@ -118,6 +120,58 @@ export default function About() {
                       )}
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Privacy Policy Card */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-stone-200 dark:border-gray-700 p-6">
+                <h3 className={`${typography.h4} mb-4`}>
+                  Privacy Policy
+                </h3>
+                <p className={`${typography.bodySmall} text-gray-500 dark:text-gray-400 mb-6 italic`}>
+                  Last Updated: March 18, 2026
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className={`${typography.label} mb-2`}>What We Collect</h4>
+                    <ul className="space-y-1">
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Email and name (from Cloudflare Access)</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Screenshots with page URL and title</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Annotations and comments</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Workspace information</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className={`${typography.label} mb-2`}>What We Don't Collect</h4>
+                    <ul className="space-y-1">
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Browsing history beyond screenshots</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Passwords or sensitive data</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Tracking or analytics data</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Third-party cookies</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className={`${typography.label} mb-2`}>How We Use Your Data</h4>
+                    <ul className="space-y-1">
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Store and retrieve screenshots</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Display annotations and feedback</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Organize in workspaces</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Authenticate access</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className={`${typography.label} mb-2`}>Security & Privacy</h4>
+                    <ul className="space-y-1">
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Cloudflare Access authentication</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• HTTPS encryption</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• No data selling or advertising</li>
+                      <li className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}>• Delete anytime</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
