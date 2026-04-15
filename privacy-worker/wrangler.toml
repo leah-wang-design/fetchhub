@@ -1,0 +1,4 @@
+name = "fetch-privacy"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+account_id = "49117820acd5ccaea75d0736a41b51da"
